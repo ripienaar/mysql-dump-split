@@ -2,8 +2,11 @@
  
 if ARGV.length == 1
     dumpfile = ARGV.shift
+    if dumpfile == '-'
+        dumpfile = $stdin
+    end
 else
-    puts("Please specify a dumpfile to process")
+    puts("Please specify a dumpfile to process, or '-' for stdin")
     exit 1
 end
  
@@ -18,9 +21,12 @@ class Numeric
     end
 end
 
-
 if File.exist?(dumpfile)
-    d = File.new(dumpfile, "r")
+    if dumpfile == $stdin
+        d = $stdin
+    else
+        d = File.new(dumpfile, "r")
+    end
  
     outfile = false
     table = ""
@@ -54,5 +60,3 @@ if File.exist?(dumpfile)
 end
  
 puts
-
-
