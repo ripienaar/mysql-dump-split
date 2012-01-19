@@ -19,6 +19,13 @@ Found a new table: administrator_log
         writing line: 239 205.482MB in 6 seconds 34.247MB/sec
 </pre>
 
+Alternatively, you can pipe in via STDIN in using '-'. Great
+for working with large gzipped backups:
+
+<pre>
+$ gunzip -c db.sql.gz | ruby split-mysql-dump.rb -
+</pre>
+
 When you're done you should have lots of files like this:
 
 <pre>
