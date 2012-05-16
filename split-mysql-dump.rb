@@ -34,7 +34,7 @@ if File.exist?(dumpfile)
     linecount = tablecount = starttime = 0
  
     while (line = d.gets)
-        if line =~ /^-- Table structure for table .(.+)./
+        if line =~ /^-- Table structure for table .(.+)./ or line =~ /^-- Dumping data for table .(.+)./
             table = $1
             linecount = 0
             tablecount += 1
