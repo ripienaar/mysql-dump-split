@@ -2,6 +2,7 @@ What is it?
 ===========
 
 A simple script that splits a MySQL dump into lots of smaller files.
+It works both with data definitions and data only dumps.
 
 Usage:
 ------
@@ -19,11 +20,24 @@ Found a new table: administrator_log
         writing line: 239 205.482MB in 6 seconds 34.247MB/sec
 </pre>
 
-Alternatively, you can pipe in via STDIN in using '-'. Great
+Alternatively, you can pipe in via STDIN in using '-s'. Great
 for working with large gzipped backups:
 
 <pre>
-$ gunzip -c db.sql.gz | ruby split-mysql-dump.rb -
+$ gunzip -c db.sql.gz | ruby split-mysql-dump.rb -s
+</pre>
+
+You can also limit the dump to particular tables using '-t' 
+or exclude tables using '-i'. 
+
+<pre>
+$ ruby split-mysql-dump.rb -t auth_strings, administrator_log db.sql
+</pre>
+
+and
+
+<pre>
+$ ruby split-mysql-dump.rb -i auth_strings
 </pre>
 
 When you're done you should have lots of files like this:
