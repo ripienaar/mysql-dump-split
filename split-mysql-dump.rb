@@ -1,15 +1,40 @@
 #!/usr/bin/ruby
  
-if ARGV.length == 1
-    dumpfile = ARGV.shift
-    if dumpfile == '-'
-        dumpfile = $stdin
-    end
-else
-    puts("Please specify a dumpfile to process, or '-' for stdin")
-    exit 1
-end
+require 'optparse'
  
+tables = []
+ignore = []
+dumpfile = ""
+
+cmds = OptionParser.new do |opts|
+  opts.banner = "Usage: split-mysql-dump.rb [options] [FILE]"
+
+  opts.on("-s", "Read from stdin") do
+    dumpfile = $stdin
+  end
+  
+  opts.on("-t", '--tables TABLES', Array, "Extract only these tables") do |t|
+      tables = t
+  end
+  
+  opts.on("-i", '--ignore-tables TABLES', Array, "Ignore these tables") do |i|
+      ignore = i
+  end
+  
+  opts.on_tail("-h", "--help") do
+    puts opts
+  end
+
+end.parse!
+
+if dumpfile == ""
+    dumpfile = ARGV.shift
+    if not dumpfile
+        puts "Nothing to do"
+        exit 
+    end
+end
+
 STDOUT.sync = true
  
 class Numeric
@@ -42,9 +67,17 @@ if File.exist?(dumpfile)
             puts("\n\n") if outfile
  
             puts("Found a new table: #{table}")
- 
+            if (tables != [] and not tables.include?(table))
+                puts"`#{table}` not in list, ignoring"
+                table = ""
+            elsif (ignore != [] and ignore.include?(table))
+                puts"`#{table}` will be ignored"
+                table = ""
+            end 
             starttime = Time.now
-            outfile = File.new("#{db}_#{table}.sql", "w")
+            if table != ""
+                outfile = File.new("#{db}_#{table}.sql", "w")
+            end
         elsif line =~ /^USE .(.+).;/
             db = $1
             puts("Found a new db: #{db}")
