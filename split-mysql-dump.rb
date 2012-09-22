@@ -80,7 +80,7 @@ if File.exist?(dumpfile)
           starttime = Time.now
           linecount = 0
           tablecount += 1
-          outfile = File.new("#{db}_#{table}.sql", "w")
+          outfile = File.new("#{db}/tables/#{table}.sql", "w")
           outfile.syswrite("USE `#{db}`;\n\n")
         end
       end
@@ -88,7 +88,9 @@ if File.exist?(dumpfile)
       db = $1
       table = nil
       outfile.close if outfile and !outfile.closed?
-      outfile = File.new("#{db}_1create.sql", "w")
+      Dir.mkdir(db)
+      Dir.mkdir("#{db}/tables")
+      outfile = File.new("#{db}/create.sql", "w")
       puts("\n\nFound a new db: #{db}")
     elsif line =~ /^-- Position to start replication or point-in-time recovery from/
       db = nil
