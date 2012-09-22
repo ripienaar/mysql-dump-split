@@ -2,6 +2,7 @@
  
 require 'optparse'
  
+addNewlines = false
 tables = []
 ignore = []
 dumpfile = ""
@@ -13,6 +14,10 @@ cmds = OptionParser.new do |opts|
   dumpfile = $stdin
   end
   
+  opts.on("-n", "--newlines", "Add newlines between inserted rows") do
+    addNewlines = true
+  end
+
   opts.on("-t", '--tables TABLES', Array, "Extract only these tables") do |t|
     tables = t
   end
@@ -59,6 +64,11 @@ if File.exist?(dumpfile)
   linecount = tablecount = starttime = 0
  
   while (line = d.gets)
+    # Add newlines between inserted rows if desired.
+    newLine = (addNewlines and line =~ /^INSERT INTO /) \
+      ? line.gsub(/([^\\])\(/, "\\1\n(") \
+      : line
+
     # Detect table changes
     if line =~ /^-- Table structure for table .(.+)./ or line =~ /^-- Dumping data for table .(.+)./
       is_new_table = table != $1
@@ -102,7 +112,7 @@ if File.exist?(dumpfile)
  
     # Write line to outfile
     if outfile and !outfile.closed?
-      outfile.syswrite(line)
+      outfile.syswrite(newLine)
       linecount += 1
       elapsed = Time.now.to_i - starttime.to_i + 1
       print("    writing line: #{linecount} #{outfile.stat.size.bytes_to_human} in #{elapsed} seconds #{(outfile.stat.size / elapsed).bytes_to_human}/sec                 \r")
