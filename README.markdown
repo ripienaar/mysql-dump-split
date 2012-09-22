@@ -43,8 +43,8 @@ $ ruby split-mysql-dump.rb -i auth_strings
 When you're done you should have lots of files like this:
 
 <pre>
--rw-r--r-- 1 rip rip   210233252 May 17 18:06 app_administrator_log.sql
--rw-r--r-- 1 rip rip   215463582 May 17 18:06 app_auth_strings.sql
+-rw-r--r-- 1 rip rip   210233252 May 17 18:06 administrator_log.sql
+-rw-r--r-- 1 rip rip   215463582 May 17 18:06 auth_strings.sql
 </pre>
 
 The first bit of the files will be the database that the tables are in
