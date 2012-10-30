@@ -5,6 +5,7 @@ require 'optparse'
 addNewlines = false
 tables = []
 ignore = []
+use_database = nil
 dumpfile = ""
 
 cmds = OptionParser.new do |opts|
@@ -24,6 +25,10 @@ cmds = OptionParser.new do |opts|
   
   opts.on("-i", '--ignore-tables TABLES', Array, "Ignore these tables") do |i|
     ignore = i
+  end
+
+  opts.on("-u", '--use-database NAME', String, "Assume NAME as database name") do |n|
+    use_database = n
   end
   
   opts.on_tail("-h", "--help") do
@@ -60,7 +65,7 @@ if File.exist?(dumpfile)
  
   outfile = nil
   table = nil
-  db = nil
+  db = use_database
   linecount = tablecount = starttime = 0
  
   while (line = d.gets)
