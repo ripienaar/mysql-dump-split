@@ -27,13 +27,6 @@ for working with large gzipped backups:
 $ gunzip -c db.sql.gz | ruby split-mysql-dump.rb -s
 </pre>
 
-If you store your dump files in a version control system (like git) you can add
-newlines between inserted rows for easier-to-read diffs:
-
-<pre>
-$ ruby split-mysql-dump.rb -n db.sql
-</pre>
-
 You can also limit the dump to particular tables using '-t' 
 or exclude tables using '-i'. 
 
