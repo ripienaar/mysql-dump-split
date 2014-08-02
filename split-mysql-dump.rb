@@ -40,9 +40,6 @@ if dumpfile == ""
   end
 end
 
-db =  Dir.pwd
-Dir.mkdir( "#{db}/tables" )
-
 STDOUT.sync = true
  
 class Numeric
@@ -88,8 +85,9 @@ if File.exist?(dumpfile)
           starttime = Time.now
           linecount = 0
           tablecount += 1
-          db =  Dir.pwd
-          outfile = File.new("#{db}/tables/#{table}.sql", "w")
+          path = (db.to_s == "" ? "" : "#{db}/") + "tables";
+          Dir.mkdir(path) unless File.exists?(path)
+          outfile = File.new("#{path}/#{table}.sql", "w")
           outfile.syswrite("USE `#{db}`;\n\n")
         end
       end
