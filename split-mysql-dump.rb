@@ -55,7 +55,7 @@ if File.exist?(dumpfile)
   if dumpfile == $stdin
     d = $stdin
   else
-    d = File.new(dumpfile, "r")
+    d = File.new(dumpfile, "r:binary")
   end
  
   outfile = nil
