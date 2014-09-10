@@ -65,7 +65,7 @@ if File.exist?(dumpfile)
  
   while (line = d.gets)
     # Detect table changes
-    if line =~ /^-- Table structure for table .(.+)./ or line =~ /^-- Dumping data for table .(.+)./
+    if line =~ /^-- Table structure for table .(.+)./ or line =~ /^-- Dumping data for table .(.+)./ or line =~ /^# Dump of table .(.+)./
       is_new_table = table != $1
       table = $1
 
