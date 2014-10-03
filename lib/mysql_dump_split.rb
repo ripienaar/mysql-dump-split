@@ -13,11 +13,18 @@ class MysqlDumpSplit
   attr_accessor :tables, :ignore, :use_database
   attr_reader :dumpfile
 
+  NEW_TABLE = [/\A-- Table structure for table .(.+)./,
+               /\A-- Dumping data for table .(.+)./,
+               /\A# Dump of table.(.+)/]
+  NEW_DB = [/\A-- Current Database: .(.+)./]
+  NEW_POSITION = [/\A-- Position to start replication or point-in-time recovery from/]
+
   def initialize
     @tables = []
     @ignore = []
     @use_database = nil
     @dumpfile = nil
+    @print_each = 10
   end
 
   def dumpfile=(dumpfile)
@@ -35,12 +42,13 @@ class MysqlDumpSplit
     while (line = @dumpfile.gets) do
 
       case line
-        when /^-- Table structure for table .(.+)./, /^-- Dumping data for table .(.+)./, /^# Dump of table.(.+)/
+        when *NEW_TABLE
           is_new_table = (@current_table != $1)
           table = $1
 
           new_table(table) if is_new_table
-        when /^-- Current Database: .(.+)./
+
+        when *NEW_DB
           @current_db = $1
           @current_table = nil
 
@@ -50,7 +58,8 @@ class MysqlDumpSplit
           Dir.mkdir("#{@current_db}/tables")
           self.outfile = "#{@current_db}/create.sql"
           puts("\n\nFound a new db: #{@current_db}")
-        when /^-- Position to start replication or point-in-time recovery from/
+
+        when *NEW_POSITION
           @current_db = nil
           @current_table = nil
 
@@ -58,6 +67,7 @@ class MysqlDumpSplit
 
           self.outfile = '1replication.sql'
           puts("\n\nFound replication data")
+
         else
           write(line)
       end
@@ -76,6 +86,13 @@ class MysqlDumpSplit
 
     @outfile.syswrite(line)
     @line_count += 1
+
+    if @line_count % @print_each == 0
+      print_status
+    end
+  end
+
+  def print_status
     elapsed = Time.now.to_i - @start_time.to_i + 1
     print("    writing line: #{@line_count} #{@outfile.stat.size.bytes_to_human} in #{elapsed} seconds #{(@outfile.stat.size / elapsed).bytes_to_human}/sec                 \r")
   end
