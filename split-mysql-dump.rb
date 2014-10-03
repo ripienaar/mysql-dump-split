@@ -95,8 +95,12 @@ if File.exist?(dumpfile)
       db = $1
       table = nil
       outfile.close if outfile and !outfile.closed?
-      Dir.mkdir(db)
-      Dir.mkdir("#{db}/tables")
+      begin
+        Dir.mkdir(db)
+        Dir.mkdir("#{db}/tables")
+      rescue
+        # Catch errors
+      end
       outfile = File.new("#{db}/create.sql", "w")
       puts("\n\nFound a new db: #{db}")
     elsif line =~ /^-- Position to start replication or point-in-time recovery from/
