@@ -1,0 +1,17 @@
+PATH
+  remote: .
+  specs:
+    mysql_dump_split (0.0.1)
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    rake (10.3.2)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  bundler (>= 1.6)
+  mysql_dump_split!
+  rake (~> 10.0)

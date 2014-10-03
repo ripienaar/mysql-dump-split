@@ -1,0 +1,45 @@
+#!/usr/bin/env ruby
+
+require 'optparse'
+
+require 'mysql_dump_split'
+
+dump_split = MysqlDumpSplit.new
+
+OptionParser.new do |opts|
+  opts.banner = "Usage: split-mysql-dump.rb [options] [FILE]"
+
+  opts.on("-s", "Read from stdin") do
+    dump_split.dumpfile = $stdin
+  end
+
+  opts.on("-t", '--tables TABLES', Array, "Extract only these tables") do |t|
+    dump_split.tables = t
+  end
+
+  opts.on("-i", '--ignore-tables TABLES', Array, "Ignore these tables") do |i|
+    dump_split.ignore = i
+  end
+
+  opts.on("-u", '--use-database NAME', String, "Assume NAME as database name") do |n|
+    dump_split.use_database = n
+  end
+
+  opts.on_tail("-h", "--help") do
+    puts opts
+    exit
+  end
+
+end.parse!
+
+dump_split.dumpfile ||= ARGV.shift
+
+unless dump_split.dumpfile
+  puts "Nothing to do"
+  exit
+end
+
+STDOUT.sync = true
+
+
+dump_split.split!
